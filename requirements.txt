@@ -1,4 +1,4 @@
-aiogram==3.2.0
+aiogram
 aiohttp
-python-dotenv
 openai
+python-dotenv
