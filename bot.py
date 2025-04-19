@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-CRYPTOBOT_API_KEY = os.getenv("CRYPTOBOT_API_KEY")
+CRYPTOBOT_TOKEN = os.getenv("CRYPTOBOT_TOKEN")  # Заменено имя переменной
 CRYPTOBOT_BOT_USERNAME = "@CryptoBot"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OWNER_ID = int(os.getenv("OWNER_ID"))
@@ -27,6 +27,8 @@ SERVICES = {
     'website': {'name': 'Сайт', 'price': 10},
 }
 
+user_orders = {}
+
 @dp.message(F.text == "/start")
 async def start(message: Message):
     kb = InlineKeyboardBuilder()
@@ -34,8 +36,6 @@ async def start(message: Message):
         kb.button(text=f"{value['name']} - ${value['price']}", callback_data=key)
     kb.adjust(1)
     await message.answer("Выберите услугу:", reply_markup=kb.as_markup())
-
-user_orders = {}
 
 @dp.callback_query(F.data.in_(SERVICES.keys()))
 async def ask_description(callback: CallbackQuery):
@@ -120,7 +120,7 @@ async def generate_image(prompt):
 
 async def create_invoice(user_id, amount, desc):
     url = "https://pay.crypt.bot/api/createInvoice"
-    headers = {"Crypto-Pay-API-Token": CRYPTOBOT_API_KEY}
+    headers = {"Crypto-Pay-API-Token": CRYPTOBOT_TOKEN}  # заменён ключ
     payload = {
         "asset": "USDT",
         "amount": amount,
@@ -136,7 +136,7 @@ async def create_invoice(user_id, amount, desc):
 
 async def check_invoice(invoice_id):
     url = f"https://pay.crypt.bot/api/getInvoices?invoice_ids={invoice_id}"
-    headers = {"Crypto-Pay-API-Token": CRYPTOBOT_API_KEY}
+    headers = {"Crypto-Pay-API-Token": CRYPTOBOT_TOKEN}  # заменён ключ
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as resp:
             data = await resp.json()
